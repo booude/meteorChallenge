@@ -9,6 +9,10 @@ size = x, y = img.size
 alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
             'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
+red = (255, 0, 0)
+blue = (0, 0, 255)
+white = (255, 255, 255)
+
 
 def countPixel():
     list_red = []
@@ -17,10 +21,10 @@ def countPixel():
         for _y in range(y):
             coord = _x, _y
             # Detecting RED pixels.
-            if img.getpixel(coord) == (255, 0, 0):
+            if img.getpixel(coord) == red:
                 list_red.append(coord)
             # Detecting WHITE pixels.
-            if img.getpixel(coord) == (255, 255, 255):
+            if img.getpixel(coord) == white:
                 list_white.append(coord)
     return list_red, list_white
 
@@ -33,7 +37,7 @@ def countOnWater():
     for _x in range(x):
         for _y in range(y):
             coord = _x, _y
-            if img.getpixel(coord) == (0, 0, 255):
+            if img.getpixel(coord) == blue:
                 if _x not in x_list:
                     x_list.append(_x)
 
@@ -41,7 +45,7 @@ def countOnWater():
     for _x in x_list:
         for _y in range(y):
             coord = _x, _y
-            if img.getpixel(coord) == (255, 0, 0):
+            if img.getpixel(coord) == red:
                 red_water.append(coord)
     return red_water, x_list
 
@@ -84,21 +88,22 @@ while True:
     op = input("Select your option: ")
 
     if op == '1':
-        _, white = countPixel()
-        print('\nThere are ' + str(len(white)) + ' stars.\n')
+        _, _white = countPixel()
+        print('\nThere are ' + str(len(_white)) + ' stars.\n')
 
     elif op == '2':
-        red, _ = countPixel()
-        print('\nThere are ' + str(len(red)) + ' meteors.\n')
+        _red, _ = countPixel()
+        print('\nThere are ' + str(len(_red)) + ' meteors.\n')
 
     elif op == '3':
         red_water, _ = countOnWater()
         print('\nThere are ' + str(len(red_water)) + ' meteors on water.\n')
 
     elif op == '4':
-        coords = hiddenPhrase()
-        print(''.join(str(coords)))
-        red, white = countPixel()
+        chars = hiddenPhrase()
+        print(''.join(str(chars)))
+        print(len(chars))
+        _red, _white = countPixel()
         red_water, x_list = countOnWater()
         # print(' '.join(list_red))
         # print(' '.join(list_white))
