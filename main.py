@@ -51,24 +51,27 @@ def countOnWater():
 
 
 def hiddenPhrase():
-    counter = 0
-    groups = []
-    coords = []
+    chars = []
+    found = 0
+    color = red
     for _x in range(x):
-        counter += 1
+        counter = 0
         for _y in range(y):
             coord = _x, _y
-            if img.getpixel(coord) == (255, 0, 0):
-                groups.append('1')
-            if img.getpixel(coord) == (255, 255, 255):
-                groups.append('0')
-        if counter == 4:
-            groups = ['0'] if groups == [] else groups
-            a = ''.join(groups)
-            coords.append(int(a))
-            groups = []
-            counter = 0
-    return coords
+            counter += 1
+            if img.getpixel(coord) == color:
+                if found == 1:
+                    chars.append(counter)
+                    found = 0
+                    counter = 0
+                    color = red
+                elif found == 0:
+                    found += 1
+                    counter = 0
+                    color = white
+            if counter == 704:
+                counter = 0
+    return chars
 
 
 menu = {}
