@@ -6,11 +6,9 @@ import sys
 img = Image.open('meteor_challenge_01.png').convert('RGB')
 size = x, y = img.size
 
-alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
-            'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-
 red = (255, 0, 0)
 blue = (0, 0, 255)
+black = (0, 0, 0)
 white = (255, 255, 255)
 
 
@@ -51,27 +49,71 @@ def countOnWater():
 
 
 def hiddenPhrase():
-    chars = []
-    found = 0
-    color = red
+    # Using the generated image to try finding the characters.
+    tmp = createNewImg()
+    x, _ = tmp.size
+    string = ''
+    strings = []
+    alternator = 0
+    alt = False
+    _x = 0
+    while _x < x:
+        if not alt:
+            coord = _x, 0
+            if tmp.getpixel(coord) == black:
+                string = string+'0'
+            if tmp.getpixel(coord) == white:
+                string = string+'1'
+            if tmp.getpixel(coord) == red:
+                string = string+'2'
+            alternator += 1
+            if alternator == 2:
+                alt = True
+                alternator = 0
+                _x = _x-1
+
+        if alt:
+            _coord = _x, 1
+            if tmp.getpixel(_coord) == black:
+                string = string+'0'
+            if tmp.getpixel(_coord) == white:
+                string = string+'1'
+            if tmp.getpixel(_coord) == red:
+                string = string+'2'
+            alternator += 1
+            if alternator == 2:
+                strings.append(string)
+                string = ''
+                alt = False
+                alternator = 0
+        _x += 1
+
+    string = ' '.join(strings)
+    return string  # This is the closest attempt.
+
+
+def createNewImg():
+    # Generates an image that maps the occasions of RED and WHITE pixels in the X axis
+    found = False
+    new_img = Image.new('RGB', (x, 2))
     for _x in range(x):
-        counter = 0
         for _y in range(y):
             coord = _x, _y
-            counter += 1
-            if img.getpixel(coord) == color:
-                if found == 1:
-                    chars.append(counter)
-                    found = 0
-                    counter = 0
-                    color = red
-                elif found == 0:
-                    found += 1
-                    counter = 0
-                    color = white
-            if counter == 704:
-                counter = 0
-    return chars
+            if img.getpixel(coord) == red:
+                if not found:
+                    new_img.putpixel((_x, 0), red)
+                if found:
+                    new_img.putpixel((_x, 1), red)
+                found = True
+            if img.getpixel(coord) == white:
+                if not found:
+                    new_img.putpixel((_x, 0), white)
+                if found:
+                    new_img.putpixel((_x, 1), white)
+                found = True
+        found = False
+    new_img.save('new.png')
+    return new_img
 
 
 menu = {}
@@ -103,13 +145,8 @@ while True:
         print('\nThere are ' + str(len(red_water)) + ' meteors on water.\n')
 
     elif op == '4':
-        chars = hiddenPhrase()
-        print(''.join(str(chars)))
-        print(len(chars))
-        _red, _white = countPixel()
-        red_water, x_list = countOnWater()
-        # print(' '.join(list_red))
-        # print(' '.join(list_white))
+        string = hiddenPhrase()
+        print(string)
 
     elif op == '5':
         print("\n\nRestarting.\n\n")
